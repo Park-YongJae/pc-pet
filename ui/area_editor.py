@@ -1,3 +1,4 @@
+from __future__ import annotations
 from PySide6.QtCore import Qt, Signal, QPoint
 from PySide6.QtGui import (
     QPainter, QColor, QPen, QBrush, QPolygon, QFont, QKeyEvent

@@ -1,3 +1,4 @@
+from __future__ import annotations
 from PySide6.QtCore import QObject, QTimer, Signal
 
 from game.pet_stats import PetState

@@ -1,3 +1,4 @@
+from __future__ import annotations
 import random
 from datetime import datetime
 from functools import partial

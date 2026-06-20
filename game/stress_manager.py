@@ -1,3 +1,4 @@
+from __future__ import annotations
 import random
 
 from PySide6.QtCore import QObject, QTimer, Signal
