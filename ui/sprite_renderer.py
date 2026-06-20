@@ -13,7 +13,6 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import QWidget
 
-from game.pet_stats import PET_TYPES
 
 _SPRITE_DIR = os.path.join(os.path.dirname(__file__), '..', 'assets', 'sprites')
 
@@ -382,63 +381,24 @@ class SpriteRenderer(QWidget):
             painter.drawLine(x1, y1, x2, y2)
 
     def _draw_pet(self, painter: QPainter) -> None:
+        """스프라이트 로드 실패 시 단순 도형 폴백."""
         if not self._facing_right:
             painter.translate(_W, 0)
             painter.scale(-1, 1)
 
-        info = PET_TYPES.get(self._pet_type, PET_TYPES[1])
-        body_color = QColor(info["body_color"])
-        shape = info["body_shape"]
-        ear = info["ear_shape"]
-        belly = info.get("belly_color")
-
         cx, cy = _W // 2, _H // 2 + 10
         body_r = 38
 
-        self._draw_ears(painter, ear, cx, cy, body_r, body_color)
-
         painter.setPen(QPen(QColor("#00000033"), 1))
-        painter.setBrush(QBrush(body_color))
-        if shape == "circle":
-            painter.drawEllipse(QPoint(cx, cy), body_r, body_r)
-        elif shape == "oval":
-            painter.drawEllipse(QRect(cx - 30, cy - 40, 60, 80))
-        elif shape == "rect":
-            painter.drawRoundedRect(QRect(cx - 30, cy - 36, 60, 72), 10, 10)
-        elif shape == "drop":
-            path = QPainterPath()
-            path.moveTo(cx, cy - body_r)
-            path.cubicTo(cx + body_r * 1.2, cy - body_r * 0.5,
-                         cx + body_r * 0.8, cy + body_r,
-                         cx, cy + body_r * 1.1)
-            path.cubicTo(cx - body_r * 0.8, cy + body_r,
-                         cx - body_r * 1.2, cy - body_r * 0.5,
-                         cx, cy - body_r)
-            painter.drawPath(path)
-        else:
-            painter.drawEllipse(QPoint(cx, cy), body_r, body_r)
-
-        if belly:
-            painter.setPen(Qt.PenStyle.NoPen)
-            painter.setBrush(QBrush(QColor(belly)))
-            if shape == "oval":
-                painter.drawEllipse(QRect(cx - 16, cy - 24, 32, 48))
-            else:
-                painter.drawEllipse(QRect(cx - 18, cy - 10, 36, 36))
+        painter.setBrush(QBrush(QColor("#AAAAAA")))
+        painter.drawEllipse(QPoint(cx, cy), body_r, body_r)
 
         self._draw_eyes(painter, cx, cy, body_r)
 
         if self._state == PetVisualState.HUNGRY:
             painter.setPen(QPen(QColor("#FFA500"), 3))
             painter.setBrush(Qt.BrushStyle.NoBrush)
-            if shape == "circle":
-                painter.drawEllipse(QPoint(cx, cy), body_r + 5, body_r + 5)
-            elif shape == "oval":
-                painter.drawEllipse(QRect(cx - 35, cy - 45, 70, 90))
-            elif shape == "rect":
-                painter.drawRoundedRect(QRect(cx - 35, cy - 41, 70, 82), 12, 12)
-            else:
-                painter.drawEllipse(QPoint(cx, cy), body_r + 5, body_r + 5)
+            painter.drawEllipse(QPoint(cx, cy), body_r + 5, body_r + 5)
 
         if self._stress_level >= 2:
             self._draw_sweat(painter, cx, cy, body_r)
@@ -562,41 +522,18 @@ class SpriteRenderer(QWidget):
         )
 
     def _draw_dead(self, painter: QPainter) -> None:
+        """스프라이트 로드 실패 시 단순 도형 폴백."""
         painter.save()
         painter.translate(_W / 2, _H / 2 + 10)
         painter.rotate(20)
         painter.translate(-_W / 2, -(_H / 2 + 10))
 
-        info = PET_TYPES.get(self._pet_type, PET_TYPES[1])
-        body_color = QColor("#888888")
-        shape = info["body_shape"]
-        ear = info["ear_shape"]
-
         cx, cy = _W // 2, _H // 2 + 10
         body_r = 38
 
-        self._draw_ears(painter, ear, cx, cy, body_r, body_color)
-
         painter.setPen(QPen(QColor("#55555533"), 1))
-        painter.setBrush(QBrush(body_color))
-        if shape == "circle":
-            painter.drawEllipse(QPoint(cx, cy), body_r, body_r)
-        elif shape == "oval":
-            painter.drawEllipse(QRect(cx - 30, cy - 40, 60, 80))
-        elif shape == "rect":
-            painter.drawRoundedRect(QRect(cx - 30, cy - 36, 60, 72), 10, 10)
-        elif shape == "drop":
-            path = QPainterPath()
-            path.moveTo(cx, cy - body_r)
-            path.cubicTo(cx + body_r * 1.2, cy - body_r * 0.5,
-                         cx + body_r * 0.8, cy + body_r,
-                         cx, cy + body_r * 1.1)
-            path.cubicTo(cx - body_r * 0.8, cy + body_r,
-                         cx - body_r * 1.2, cy - body_r * 0.5,
-                         cx, cy - body_r)
-            painter.drawPath(path)
-        else:
-            painter.drawEllipse(QPoint(cx, cy), body_r, body_r)
+        painter.setBrush(QBrush(QColor("#888888")))
+        painter.drawEllipse(QPoint(cx, cy), body_r, body_r)
 
         eye_y = cy - body_r // 3
         painter.setPen(QPen(QColor("#555555"), 3))
