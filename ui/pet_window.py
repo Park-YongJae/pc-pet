@@ -13,6 +13,7 @@ _DEAD_STATES = (PetVisualState.EGG, PetVisualState.HATCHING, PetVisualState.DEAD
 _ACTIVE_STATES = (PetVisualState.IDLE, PetVisualState.WALKING, PetVisualState.HUNGRY)
 
 
+
 class PetWindow(QWidget):
     def __init__(self, config: Config, state_machine: StateMachine,
                  parent=None):
@@ -230,6 +231,7 @@ class PetWindow(QWidget):
     def _on_talk_submitted(self, text: str) -> None:
         if not self._client or not self._pet_conversation:
             return
+
         self._state_machine.start_thinking()
         if self._speech_bubble is None:
             from ui.speech_bubble import SpeechBubble
@@ -244,23 +246,29 @@ class PetWindow(QWidget):
             f"너는 {pet_name}이야. "
             f"현재 배부름 수치는 {state.hunger}/100 (100에 가까울수록 배부름), "
             f"스트레스 수치는 {state.stress}/100 (0에 가까울수록 편안함)이야. "
-            "귀엽고 짧게, 100자 이내로 대답해줘. 이모지 사용 가능."
+            "귀엽고 짧게, 100자 이내로 대답해줘. 이모지 사용 가능. "
+            "대화 맥락상 주인의 말이 나에게 상처를 주는 내용이면 응답 맨 앞에 '[HURT]'를 붙여줘. "
+            "그렇지 않으면 '[HURT]' 없이 바로 응답해줘."
         )
         self._client.reply_ready.connect(self._on_pet_reply)
         self._client.error_occurred.connect(self._on_ai_error)
         self._client.request(self._pet_conversation.messages, system)
 
     def _on_pet_reply(self, text: str) -> None:
-        # 연결 해제 (일회성 슬롯으로 사용)
         try:
             self._client.reply_ready.disconnect(self._on_pet_reply)
             self._client.error_occurred.disconnect(self._on_ai_error)
         except RuntimeError:
             pass
+
+        hurt = text.startswith("[HURT]")
+        if hurt:
+            text = text[len("[HURT]"):].lstrip()
+
         self._pet_conversation.add_assistant(text)
         self._state_machine.start_talking()
         if self._stress_mgr:
-            self._stress_mgr.adjust(-5)
+            self._stress_mgr.adjust(15 if hurt else -5)
         if self._speech_bubble:
             self._speech_bubble.show_text(text, self.geometry())
 

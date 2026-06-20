@@ -36,6 +36,9 @@ class StressManager(QObject):
     def start(self) -> None:
         self._neglect_timer.start()
         self._reschedule_msg()
+        level = self._compute_level(self._state.stress)
+        self._last_level = level
+        self.stress_level_changed.emit(level)
 
     def stop(self) -> None:
         self._neglect_timer.stop()

@@ -111,8 +111,8 @@ class ClaudeClient(QObject):
         thread.start()
 
     def _on_reply(self, text: str) -> None:
-        self.reply_ready.emit(text)
         self._cleanup_thread()
+        self.reply_ready.emit(text)
 
     def _on_error(self, msg: str) -> None:
         self.error_occurred.emit(msg)
