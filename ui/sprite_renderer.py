@@ -1,5 +1,6 @@
 from __future__ import annotations
 import os
+import sys
 import random
 import math
 from enum import Enum, auto
@@ -14,7 +15,10 @@ from PySide6.QtGui import (
 from PySide6.QtWidgets import QWidget
 
 
-_SPRITE_DIR = os.path.join(os.path.dirname(__file__), '..', 'assets', 'sprites')
+if getattr(sys, 'frozen', False):
+    _SPRITE_DIR = os.path.join(sys._MEIPASS, 'assets', 'sprites')
+else:
+    _SPRITE_DIR = os.path.join(os.path.dirname(__file__), '..', 'assets', 'sprites')
 
 _SPRITE_FRAMES = {
     'breathing': 2,
