@@ -121,6 +121,7 @@ class App:
         sm.pet_revived.connect(stress.start)
         sm.pet_revived.connect(poop.start)
         sm.pet_revived.connect(self._start_random_event)
+        sm.pet_revived.connect(self._pet_conversation.clear)
 
         # RandomEventSystem → PetWindow
         self._random_event.event_message.connect(win.on_random_event)

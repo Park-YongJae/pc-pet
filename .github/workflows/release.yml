@@ -62,6 +62,9 @@ jobs:
             --hidden-import dotenv \
             main.py
 
+      - name: Sign (ad-hoc)
+        run: codesign --force --deep --sign - dist/PC-PET.app
+
       - name: Package
         run: cd dist && zip -r ../PC-PET-macos.zip PC-PET.app
 
