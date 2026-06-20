@@ -243,9 +243,11 @@ class PetWindow(QWidget):
         state = self._state_machine._state_data
         pet_name = self._config.data.pet_name
         from game.pet_stats import PET_TYPES
-        personality = PET_TYPES.get(state.pet_type, PET_TYPES[1])["personality"]
+        pet_info = PET_TYPES.get(state.pet_type, PET_TYPES[1])
+        species = pet_info["species"]
+        personality = pet_info["personality"]
         system = (
-            f"너는 {pet_name}이야. 성격: {personality} "
+            f"너는 {species}야. 이름은 {pet_name}이고. 성격: {personality} "
             f"현재 배부름 수치는 {state.hunger}/100 (100에 가까울수록 배부름), "
             f"스트레스 수치는 {state.stress}/100 (0에 가까울수록 편안함)이야. "
             "귀엽고 짧게, 100자 이내로 대답해줘. 이모지 사용 가능. "
