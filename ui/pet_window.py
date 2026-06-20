@@ -4,7 +4,7 @@ from PySide6.QtGui import QImage, QBitmap, QPainter
 from PySide6.QtWidgets import QWidget, QApplication, QMenu
 
 from core.config import Config
-from core.platform_utils import set_click_through
+from core.platform_utils import set_click_through, init_mac_window
 from core.state_machine import StateMachine
 from game.walk_controller import WalkController
 from ui.sprite_renderer import SpriteRenderer, PetVisualState
@@ -71,6 +71,7 @@ class PetWindow(QWidget):
         import platform
         if platform.system() == "Darwin":
             set_click_through(self, False)
+            init_mac_window(self)
 
     def _center_on_screen(self) -> None:
         screen = QApplication.primaryScreen().availableGeometry()
