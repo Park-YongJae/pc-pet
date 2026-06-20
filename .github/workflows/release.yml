@@ -1,0 +1,85 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build
+        run: python -m PyInstaller pc-pet.spec
+
+      - name: Package
+        run: Compress-Archive -Path dist/PC-PET.exe -DestinationPath PC-PET-windows.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-build
+          path: PC-PET-windows.zip
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build
+        run: |
+          python -m PyInstaller \
+            --windowed \
+            --name "PC-PET" \
+            --add-data "data/config.json:data" \
+            --add-data "assets:assets" \
+            --hidden-import keyring.backends.macOS \
+            --hidden-import keyring.backends.fail \
+            --hidden-import anthropic \
+            --hidden-import pydantic \
+            --hidden-import dotenv \
+            main.py
+
+      - name: Package
+        run: cd dist && zip -r ../PC-PET-macos.zip PC-PET.app
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-build
+          path: PC-PET-macos.zip
+
+  release:
+    needs: [build-windows, build-macos]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            PC-PET-windows.zip
+            PC-PET-macos.zip
